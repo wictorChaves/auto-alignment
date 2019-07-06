@@ -10,16 +10,71 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:wictor.autoalignment"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "wictor.autoalignment",
+				"title": "Auto Alignment"
 			}
-		]
+		],
+        "configuration": {
+            "type": "object",
+            "title": "Alignment configuration",
+            "properties": {
+                "alignment.operatorPadding": {
+                    "type": "string",
+                    "enum": [
+                        "left",
+                        "right"
+                    ],
+                    "default": "right",
+                    "description": "Control where to insert space to align different length operators (e.g. aligning = += *= ...)"
+                },
+                "alignment.surroundSpace": {
+                    "type": "object",
+                    "default": {
+                        "colon": [
+                            0,
+                            1
+                        ],
+                        "assignment": [
+                            1,
+                            1
+                        ],
+                        "arrow":[
+                            1,
+                            1
+                        ],
+                        "comment": 2
+                    },
+                    "description": "Specify how many spaces to insert around the operator."
+                },
+                "alignment.indentBase": {
+                    "type": "string",
+                    "enum": [
+                        "firstline",
+                        "activeline",
+                        "dontchange"
+                    ],
+                    "default": "firstline",
+                    "description": "firstline: Change indent of all lines to the firstline.\n activeline: Change intent of all lines to the activeline.\n dontchange: Don't change line indent, only aligns those lines with same indentation."
+                }
+            }
+        },
+        "configurationDefaults": {
+            "[shellscript]": {
+                "alignment.surroundSpace": {
+					"colon": [ 0, 1 ],
+					"from": [ 0, 1 ],
+                    "assignment": [ -1, -1 ],
+                    "arrow":[ 1, 1 ],
+                    "comment": 2
+                }
+            }
+        }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -37,6 +92,11 @@
 		"mocha": "^6.1.4",
 		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
-		"vscode-test": "^1.0.0-next.0"
-	}
+		"vscode-test": "^1.0.0-next.0",
+        "vscode": "^1.0.0"
+	},
+	"extensionPack": [
+		"wictor.autoalignment"
+	],
+	"publisher": "AutoAlignment"
 }
