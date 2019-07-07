@@ -3,6 +3,7 @@ import { LineRange } from "./interface/line-range";
 import { TokenType } from "./enum/token-type";
 import { LineInfo } from "./interface/line-info";
 import { Token } from "./interface/token";
+import { Position } from "vscode";
 
 const REG_WS = /\s/;
 const BRACKET_PAIR: any = { "{": "}", "[": "]", "(": ")" };
@@ -10,10 +11,33 @@ const BRACKET_PAIR: any = { "{": "}", "[": "]", "(": ")" };
 export default class StartUp {
 
   protected editor: vscode.TextEditor;
+  protected currentCursoPosition: Position | undefined;
 
   constructor(editor: vscode.TextEditor) {
     this.editor = editor;
+    this.editor.selection = new vscode.Selection(this._getAllRange().start, this._getAllRange().end);
     this.process();
+    this.currentCursoPosition = editor.selection.active;
+
+
+
+    //this.editor.selection = new vscode.Selection(this._getNoneRange().start, this._getNoneRange().end);
+
+  }
+
+  protected _getNoneRange() {
+    var firstLine = this.editor.document.lineAt(0);
+    var lastLine = this.editor.document.lineAt(0);
+    return new vscode.Range(0, 0, 0, 0);
+  }
+
+  protected _getAllRange() {
+    var firstLine = this.editor.document.lineAt(0);
+    var lastLine = this.editor.document.lineAt(this.editor.document.lineCount - 1);
+    return new vscode.Range(0,
+      firstLine.range.start.character,
+      this.editor.document.lineCount - 1,
+      lastLine.range.end.character);
   }
 
   protected whitespace(count: number) {
@@ -92,7 +116,16 @@ export default class StartUp {
 
         editBuilder.replace(location, formatted[i].join("\n"));
       }
-    });
+    }).then(this._removeSelection.bind(this));
+  }
+
+  protected _removeSelection(value: any) {
+    if (this.currentCursoPosition != undefined) {
+      var newPosition = this.currentCursoPosition.with(this.currentCursoPosition.line, this.currentCursoPosition.character);
+      var newSelection = new vscode.Selection(newPosition, newPosition);
+      var self = this;
+      self.editor.selection = newSelection;
+    }
   }
 
   protected getConfig() {

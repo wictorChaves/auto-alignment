@@ -2,7 +2,7 @@
 	"name": "auto-alignment",
 	"displayName": "Auto Alignment",
 	"description": "Auto Alignment of  your code",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
