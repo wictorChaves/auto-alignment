@@ -1,6 +1,6 @@
-<p align="right"><a target="_blank" href="https://ko-fi.com/wictorchaves"><img src="images/mug.png" alt="Buy me a coffee">Buy me a coffee</a></p>
+<p align="right"><a target="_blank" href="https://ko-fi.com/wictorchaves"><img src="https://raw.githubusercontent.com/wictorChaves/auto-alignment/master/images/mug.png" alt="Buy me a coffee">Buy me a coffee</a></p>
 
-<p><img src="images/icon.png"></p>
+<p><img src="https://raw.githubusercontent.com/wictorChaves/auto-alignment/master/images/icon.png"></p>
 
 # Auto Alignment
 
@@ -22,7 +22,7 @@ There's no built-in shortcut comes with the extension, you have to add shotcuts 
 
 # Example
 
-![example](images/example.gif)
+![example](https://raw.githubusercontent.com/wictorChaves/auto-alignment/master/images/example.gif)
 
 # Credits
 
