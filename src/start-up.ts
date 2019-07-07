@@ -1,39 +1,34 @@
-import * as vscode from "vscode";
+import * as vscode   from "vscode";
 import { LineRange } from "./interface/line-range";
 import { TokenType } from "./enum/token-type";
-import { LineInfo } from "./interface/line-info";
-import { Token } from "./interface/token";
-import { Position } from "vscode";
+import { LineInfo }  from "./interface/line-info";
+import { Token }     from "./interface/token";
+import { Position }  from "vscode";
 
-const REG_WS = /\s/;
+const REG_WS            = /\s/;
 const BRACKET_PAIR: any = { "{": "}", "[": "]", "(": ")" };
 
 export default class StartUp {
 
-  protected editor: vscode.TextEditor;
+  protected editor              : vscode.TextEditor;
   protected currentCursoPosition: Position | undefined;
 
   constructor(editor: vscode.TextEditor) {
-    this.editor = editor;
+    this.editor           = editor;
     this.editor.selection = new vscode.Selection(this._getAllRange().start, this._getAllRange().end);
     this.process();
     this.currentCursoPosition = editor.selection.active;
-
-
-
-    //this.editor.selection = new vscode.Selection(this._getNoneRange().start, this._getNoneRange().end);
-
   }
 
   protected _getNoneRange() {
     var firstLine = this.editor.document.lineAt(0);
-    var lastLine = this.editor.document.lineAt(0);
+    var lastLine  = this.editor.document.lineAt(0);
     return new vscode.Range(0, 0, 0, 0);
   }
 
   protected _getAllRange() {
     var firstLine = this.editor.document.lineAt(0);
-    var lastLine = this.editor.document.lineAt(this.editor.document.lineCount - 1);
+    var lastLine  = this.editor.document.lineAt(this.editor.document.lineCount - 1);
     return new vscode.Range(0,
       firstLine.range.start.character,
       this.editor.document.lineCount - 1,
@@ -45,7 +40,7 @@ export default class StartUp {
   }
 
   /* Align:
-   *   operators = += -= *= /= :
+   * operators =  +=  -=  *=  /= :
    *   trailling comment
    *   preceding comma
    * Ignore anything inside a quote, comment, or block
@@ -55,7 +50,7 @@ export default class StartUp {
 
     this.editor.selections.forEach((sel) => {
 
-      const indentBase = this.getConfig().get("indentBase", "firstline") as string;
+      const indentBase               = this.getConfig().get("indentBase", "firstline") as string;
       const importantIndent: boolean = indentBase == "dontchange";
 
       let res: LineRange;
@@ -65,10 +60,10 @@ export default class StartUp {
       } else {
         // Otherwise, narrow down the range where to align
         let start = sel.start.line;
-        let end = sel.end.line;
+        let end   = sel.end.line;
 
         while (true) {
-          res = this.narrow(start, end, start, importantIndent);
+              res      = this.narrow(start, end, start, importantIndent);
           let lastLine = res.infos[res.infos.length - 1];
 
           if (lastLine.line.lineNumber > end) {
@@ -91,15 +86,6 @@ export default class StartUp {
     // Format
     let formatted: string[][] = [];
     for (let range of ranges) {
-
-      /*
-      console.log( `\n===============` );
-      for ( let info of range.infos ) {
-        console.log( `+++ [${info.line.lineNumber}]: ${TokenType[info.sgfntTokenType]} +++` );
-        console.log( info.line, info.tokens );
-      }
-      // */
-
       formatted.push(this.format(range));
     }
 
@@ -107,7 +93,7 @@ export default class StartUp {
     this.editor.edit((editBuilder) => {
       for (let i = 0; i < ranges.length; ++i) {
 
-        var infos = ranges[i].infos;
+        var infos    = ranges[i].infos;
         var lastline = infos[infos.length - 1].line;
         var location = new vscode.Range(infos[0].line.lineNumber,
           0,
@@ -121,16 +107,16 @@ export default class StartUp {
 
   protected _removeSelection(value: any) {
     if (this.currentCursoPosition != undefined) {
-      var newPosition = this.currentCursoPosition.with(this.currentCursoPosition.line, this.currentCursoPosition.character);
-      var newSelection = new vscode.Selection(newPosition, newPosition);
-      var self = this;
-      self.editor.selection = newSelection;
+      var newPosition           = this.currentCursoPosition.with(this.currentCursoPosition.line, this.currentCursoPosition.character);
+      var newSelection          = new vscode.Selection(newPosition, newPosition);
+      var self                  = this;
+          self.editor.selection = newSelection;
     }
   }
 
   protected getConfig() {
 
-    let defaultConfig = vscode.workspace.getConfiguration("alignment");
+    let defaultConfig   = vscode.workspace.getConfiguration("alignment");
     let langConfig: any = null;
 
     try {
@@ -152,14 +138,14 @@ export default class StartUp {
   }
 
   protected tokenize(line: number): LineInfo {
-    let textline = this.editor.document.lineAt(line);
-    let text = textline.text;
-    let pos = 0;
+    let textline     = this.editor.document.lineAt(line);
+    let text         = textline.text;
+    let pos          = 0;
     let lt: LineInfo = {
-      line: textline
+        line          : textline
       , sgfntTokenType: TokenType.Invalid
-      , sgfntTokens: []
-      , tokens: []
+      , sgfntTokens   : []
+      , tokens        : []
     };
 
     let lastTokenType = TokenType.Invalid;
@@ -194,19 +180,19 @@ export default class StartUp {
         currTokenType = TokenType.From;
       } else if (char == ",") {
         if (lt.tokens.length == 0 || (lt.tokens.length == 1 && lt.tokens[0].type == TokenType.Whitespace)) {
-          currTokenType = TokenType.CommaAsWord; // Comma-first style
+          currTokenType = TokenType.CommaAsWord;  // Comma-first style
         } else {
           currTokenType = TokenType.Comma;
         }
       } else if (char == "=" && next == ">") {
         currTokenType = TokenType.Arrow;
-        nextSeek = 2;
+        nextSeek      = 2;
       } else if (char == "=" && next == "=") {
         currTokenType = TokenType.Word;
-        nextSeek = 2;
+        nextSeek      = 2;
       } else if ((char == "+" || char == "-" || char == "*" || char == "/") && next == "=") {
         currTokenType = TokenType.Assignment;
-        nextSeek = 2;
+        nextSeek      = 2;
       } else if (char == "=" && next != "=") {
         currTokenType = TokenType.Assignment;
       } else {
@@ -216,7 +202,7 @@ export default class StartUp {
       if (currTokenType != lastTokenType) {
         if (tokenStartPos != -1) {
           lt.tokens.push({
-            type: lastTokenType
+              type: lastTokenType
             , text: textline.text.substr(tokenStartPos, pos - tokenStartPos)
           });
         }
@@ -293,7 +279,7 @@ export default class StartUp {
 
     if (tokenStartPos != -1) {
       lt.tokens.push({
-        type: lastTokenType
+          type: lastTokenType
         , text: textline.text.substr(tokenStartPos, pos - tokenStartPos)
       });
     }
@@ -331,7 +317,7 @@ export default class StartUp {
 
   protected arrayAnd(array1: TokenType[], array2: TokenType[]): TokenType[] {
     var res: TokenType[] = []
-    var map: any = {}
+    var map: any         = {}
     for (var i = 0; i < array1.length; ++i) {
       map[array1[i]] = true;
     }
@@ -353,7 +339,7 @@ export default class StartUp {
     */
   protected narrow(start: number, end: number, anchor: number, importantIndent: boolean): LineRange {
     let anchorToken = this.tokenize(anchor);
-    let range = { anchor, infos: [anchorToken] };
+    let range       = { anchor, infos: [anchorToken] };
 
     let tokenTypes = anchorToken.sgfntTokens;
 
@@ -426,9 +412,9 @@ export default class StartUp {
   protected format(range: LineRange): string[] {
 
     // 0. Remove indentatioin, and trailing whitespace
-    let indentation = null;
-    let anchorLine = range.infos[0];
-    const config = this.getConfig();
+    let   indentation = null;
+    let   anchorLine  = range.infos[0];
+    const config      = this.getConfig();
 
     if (config.get("indentBase", "firstline") as string == "activeline") {
       for (let info of range.infos) {
@@ -474,7 +460,7 @@ export default class StartUp {
     }
     if (firstWordLength > 0) {
       let wordSpace: Token = { type: TokenType.Insertion, text: this.whitespace(firstWordLength + 1) };
-      let oneSpace: Token = { type: TokenType.Insertion, text: " " };
+      let oneSpace: Token  = { type: TokenType.Insertion, text: " " };
 
       for (let info of range.infos) {
         let count = 0;
@@ -526,12 +512,12 @@ export default class StartUp {
     }
 
     // 3. Align
-    const configOP = config.get("operatorPadding") as string;
-    const configWS = config.get("surroundSpace");
-    const stt = TokenType[range.infos[0].sgfntTokenType].toLowerCase();
+    const configOP       = config.get("operatorPadding") as string;
+    const configWS       = config.get("surroundSpace");
+    const stt            = TokenType[range.infos[0].sgfntTokenType].toLowerCase();
     const configDef: any = { "colon": [0, 1], "from": [1, 0], "assignment": [1, 1], "comment": 2, "arrow": [1, 1] };
-    const configSTT = configWS[stt] || configDef[stt];
-    const configComment = configWS["comment"] || configDef["comment"];
+    const configSTT      = configWS[stt] || configDef[stt];
+    const configComment  = configWS["comment"] || configDef["comment"];
 
     const rangeSize = range.infos.length;
 
@@ -542,9 +528,9 @@ export default class StartUp {
     let result = new Array<string>(rangeSize);
     result.fill(indentation);
 
-    let exceed = 0; // Tracks how many line have reached to the end.
+    let exceed             = 0;      // Tracks how many line have reached to the end.
     let hasTrallingComment = false;
-    let resultSize = 0;
+    let resultSize         = 0;
 
     while (exceed < rangeSize) {
 
@@ -552,8 +538,8 @@ export default class StartUp {
 
       // First pass: for each line, scan until we reach to the next operator
       for (let l = 0; l < rangeSize; ++l) {
-        let i = column[l];
-        let info = range.infos[l];
+        let i         = column[l];
+        let info      = range.infos[l];
         let tokenSize = info.tokens.length;
 
         if (i == -1) { continue; }
@@ -602,7 +588,7 @@ export default class StartUp {
         if (i == -1) { continue; }
 
         let info = range.infos[l];
-        let res = result[l];
+        let res  = result[l];
 
         let op = info.tokens[i].text;
         if (op.length < operatorSize) {
@@ -621,7 +607,7 @@ export default class StartUp {
         if (info.tokens[i].type == TokenType.Comma) {
           res += op;
           if (i < info.tokens.length - 1) {
-            res += padding + " "; // Ensure there's one space after comma.
+            res += padding + " ";  // Ensure there's one space after comma.
           }
         } else {
           if (configSTT[0] < 0) {
@@ -675,8 +661,8 @@ export default class StartUp {
       for (let l = 0; l < rangeSize; ++l) {
         let info: any = range.infos[l];
         if (info.tokens.length) {
-          let res = result[l];
-          result[l] = res + this.whitespace(resultSize - res.length + configComment) + info.tokens.pop().text;
+          let    res = result[l];
+          result[l]  = res + this.whitespace(resultSize - res.length + configComment) + info.tokens.pop().text;
         }
       }
     }
