@@ -1,4 +1,4 @@
-<p align="right"><a target="_blank" href="https://ko-fi.com/wictorchaves"><img src="https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg" alt="Buy me a coffee">Buy me a coffee</a></p>
+<p align="right"><a target="_blank" href="https://raw.githubusercontent.com/wictorChaves/auto-alignment/master/images/mug.png" alt="Buy me a coffee">Buy me a coffee</a></p>
 
 <p><img src="https://raw.githubusercontent.com/wictorChaves/auto-alignment/master/images/icon.png"></p>
 
