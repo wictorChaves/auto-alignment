@@ -2,7 +2,7 @@
 	"name": "auto-alignment",
 	"displayName": "Auto Alignment",
 	"description": "Auto Alignment of  your code",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "images/icon.png",
     "repository": "https://github.com/wictorChaves/auto-alignment",
     "publisher": "Wictor Chaves",
