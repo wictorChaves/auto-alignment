@@ -6,6 +6,16 @@
 
 Auto Alignment of your code
 
+# Download
+
+<p>
+  <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=AutoAlignment.auto-alignment">
+    <img src="http://icons.iconarchive.com/icons/papirus-team/papirus-apps/128/visual-studio-code-icon.png">
+    Marketplace
+  </a>
+</p>
+
+
 ## Shortcuts
 
 There's no built-in shortcut comes with the extension, you have to add shotcuts by yourself:
