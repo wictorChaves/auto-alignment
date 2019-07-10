@@ -153,48 +153,54 @@ export default class StartUp {
 
     while (pos < text.length) {
 
-      let char = text.charAt(pos);
-      let next = text.charAt(pos + 1);
+      let current = text.charAt(pos);
+      let next1   = text.charAt(pos + 1);
+      let next2   = text.charAt(pos + 2);
+      let next3   = text.charAt(pos + 3);
 
       let currTokenType: TokenType;
 
       let nextSeek = 1;
 
       // Tokens order are important
-      if (char.match(REG_WS)) {
+      if (current.match(REG_WS)) {
         currTokenType = TokenType.Whitespace;
-      } else if (char == "\"" || char == "'" || char == "`") {
+      } else if (current == "\"" || current == "'" || current == "`") {
         currTokenType = TokenType.String;
-      } else if (char == "{" || char == "(" || char == "[") {
+      } else if (current == "{" || current == "(" || current == "[") {
         currTokenType = TokenType.Block;
-      } else if (char == "}" || char == ")" || char == "]") {
+      } else if (current == "}" || current == ")" || current == "]") {
         currTokenType = TokenType.EndOfBlock;
-      } else if (char == "/" && (
-        (next == "/" && (pos > 0 ? text.charAt(pos - 1) : "") != ":") // only `//` but not `://`
-        || next == "*"
+      } else if (current == "/" && (
+        (next1 == "/" && (pos > 0 ? text.charAt(pos - 1) : "") != ":") // only `//` but not `://`
+        || next1 == "*"
       )) {
         currTokenType = TokenType.Comment;
-      } else if (char == ":" && next != ":") {
+      } else if (current == ":" && next1 != ":") {
         currTokenType = TokenType.Colon;
-      } else if (char == "f" && next == "r") {
+      } else if (current == "f" && next1 == "r" && next2 == "o" && next3 == "m") {
         currTokenType = TokenType.From;
-      } else if (char == ",") {
+        nextSeek      = 4;
+      } else if (current == ",") {
         if (lt.tokens.length == 0 || (lt.tokens.length == 1 && lt.tokens[0].type == TokenType.Whitespace)) {
           currTokenType = TokenType.CommaAsWord;  // Comma-first style
         } else {
           currTokenType = TokenType.Comma;
         }
-      } else if (char == "=" && next == ">") {
+      } else if (current == "=" && next1 == ">") {
         currTokenType = TokenType.Arrow;
         nextSeek      = 2;
-      } else if (char == "=" && next == "=") {
+      } else if (current == "=" && next1 == "=") {
         currTokenType = TokenType.Word;
         nextSeek      = 2;
-      } else if ((char == "+" || char == "-" || char == "*" || char == "/") && next == "=") {
+      } else if ((current == "+" || current == "-" || current == "*" || current == "/") && next1 == "=") {
         currTokenType = TokenType.Assignment;
         nextSeek      = 2;
-      } else if (char == "=" && next != "=") {
+      } else if (current == "=" && next1 != "=") {
         currTokenType = TokenType.Assignment;
+      } else if (current == "!" && next1 == "=") {
+        currTokenType = TokenType.Word;
+        nextSeek      = 2;
       } else {
         currTokenType = TokenType.Word;
       }
@@ -225,7 +231,7 @@ export default class StartUp {
         ++pos;
         while (pos < text.length) {
           let quote = text.charAt(pos);
-          if (quote == char && text.charAt(pos - 1) != "\\") {
+          if (quote == current && text.charAt(pos - 1) != "\\") {
             break;
           }
           ++pos;
@@ -241,9 +247,9 @@ export default class StartUp {
         let bracketCount = 1;
         while (pos < text.length) {
           let bracket = text.charAt(pos);
-          if (bracket == char) {
+          if (bracket == current) {
             ++bracketCount;
-          } else if (bracket == BRACKET_PAIR[char] && text.charAt(pos - 1) != "\\") {
+          } else if (bracket == BRACKET_PAIR[current] && text.charAt(pos - 1) != "\\") {
             if (bracketCount == 1) {
               break;
             } else {
@@ -257,11 +263,11 @@ export default class StartUp {
         }
       }
 
-      if (char == "/") {
+      if (current == "/") {
         // Skip to end if we encounter single line comment
-        if (next == "/") {
+        if (next1 == "/") {
           pos = text.length;
-        } else if (next == "*") {
+        } else if (next1 == "*") {
           ++pos;
           while (pos < text.length) {
             if (text.charAt(pos) == "*" && text.charAt(pos + 1) == "/") {
