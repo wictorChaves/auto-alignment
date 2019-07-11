@@ -12,4 +12,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
- - Fixed bug with !=, from and var
+ - Fixed bug with '!=', 'from' and 'var'
+
+## 1.1.2 - 2019-07-10
+
+### Fixed
+
+ - Fixed bug of without space after of 'from'

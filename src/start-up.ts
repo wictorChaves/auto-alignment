@@ -180,7 +180,7 @@ export default class StartUp {
         currTokenType = TokenType.Colon;
       } else if (current == "f" && next1 == "r" && next2 == "o" && next3 == "m") {
         currTokenType = TokenType.From;
-        nextSeek      = 4;
+        nextSeek      = 5;
       } else if (current == ",") {
         if (lt.tokens.length == 0 || (lt.tokens.length == 1 && lt.tokens[0].type == TokenType.Whitespace)) {
           currTokenType = TokenType.CommaAsWord;  // Comma-first style
