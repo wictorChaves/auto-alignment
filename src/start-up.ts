@@ -190,7 +190,13 @@ export default class StartUp {
       } else if (current == "=" && next1 == ">") {
         currTokenType = TokenType.Arrow;
         nextSeek      = 2;
-      } else if (current == "=" && next1 == "=") {
+      } else if ((current == '=' || current == '!' || current == '>' || current == '<') && next1 == "=") {
+        currTokenType = TokenType.Word;
+        nextSeek      = 2;
+        if ((current == '=' || current == '!') && text.charAt(pos + nextSeek) == '=') {
+          nextSeek = 3;
+        }
+      } else if ((current == '>' || current == '<' || current == '!') && next1 == '=') {
         currTokenType = TokenType.Word;
         nextSeek      = 2;
       } else if ((current == "+" || current == "-" || current == "*" || current == "/") && next1 == "=") {

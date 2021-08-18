@@ -19,3 +19,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
  - Fixed bug of without space after of 'from'
+ 
+## 1.2.0 - 2021-08-17
+
+### Fixed
+
+ - Fixed bug 3 equals
