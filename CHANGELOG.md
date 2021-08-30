@@ -25,3 +25,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
  - Fixed bug 3 equals
+
+## 1.2.1 - 2021-08-29
+
+### Fixed
+
+ - Fixed bug 'from' of Angular import
+ - Fixed curso pointer

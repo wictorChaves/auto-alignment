@@ -14,16 +14,10 @@ export default class StartUp {
   protected currentCursoPosition: Position | undefined;
 
   constructor(editor: vscode.TextEditor) {
-    this.editor           = editor;
-    this.editor.selection = new vscode.Selection(this._getAllRange().start, this._getAllRange().end);
-    this.process();
+    this.editor               = editor;
     this.currentCursoPosition = editor.selection.active;
-  }
-
-  protected _getNoneRange() {
-    var firstLine = this.editor.document.lineAt(0);
-    var lastLine  = this.editor.document.lineAt(0);
-    return new vscode.Range(0, 0, 0, 0);
+    this.editor.selection     = new vscode.Selection(this._getAllRange().start, this._getAllRange().end);
+    this.process();
   }
 
   protected _getAllRange() {
@@ -95,10 +89,7 @@ export default class StartUp {
 
         var infos    = ranges[i].infos;
         var lastline = infos[infos.length - 1].line;
-        var location = new vscode.Range(infos[0].line.lineNumber,
-          0,
-          lastline.lineNumber,
-          lastline.text.length);
+        var location = new vscode.Range(infos[0].line.lineNumber, 0, lastline.lineNumber, lastline.text.length);
 
         editBuilder.replace(location, formatted[i].join("\n"));
       }
@@ -153,10 +144,12 @@ export default class StartUp {
 
     while (pos < text.length) {
 
+      let before  = text.charAt(pos - 1);
       let current = text.charAt(pos);
       let next1   = text.charAt(pos + 1);
       let next2   = text.charAt(pos + 2);
       let next3   = text.charAt(pos + 3);
+      let next4   = text.charAt(pos + 4);
 
       let currTokenType: TokenType;
 
@@ -178,7 +171,22 @@ export default class StartUp {
         currTokenType = TokenType.Comment;
       } else if (current == ":" && next1 != ":") {
         currTokenType = TokenType.Colon;
-      } else if (current == "f" && next1 == "r" && next2 == "o" && next3 == "m") {
+      } else if (before.match(REG_WS) && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4.match(REG_WS)) {
+        currTokenType = TokenType.From;
+        nextSeek      = 5;
+      } else if (before.match(REG_WS) && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4 == "'") {
+        currTokenType = TokenType.From;
+        nextSeek      = 5;
+      } else if (before.match(REG_WS) && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4 == "\"") {
+        currTokenType = TokenType.From;
+        nextSeek      = 5;
+      } else if (before == "}" && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4.match(REG_WS)) {
+        currTokenType = TokenType.From;
+        nextSeek      = 5;
+      } else if (before == "}" && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4 == "'") {
+        currTokenType = TokenType.From;
+        nextSeek      = 5;
+      } else if (before == "}" && current == "f" && next1 == "r" && next2 == "o" && next3 == "m" && next4 == "\"") {
         currTokenType = TokenType.From;
         nextSeek      = 5;
       } else if (current == ",") {
